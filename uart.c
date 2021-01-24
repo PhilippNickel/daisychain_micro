@@ -112,7 +112,9 @@ void decode_command(void)
 		loopback();
 		break;
 	case '5': // read daisy chain
-		//daisy_read_content();
+		daisy_read();
+		loopback();
+		daisy_send_daisybuf_uart();
 		break;
 	case '6': // reset daisy chain
 		daisy_send_bit(rxbuf[1]);

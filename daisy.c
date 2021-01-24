@@ -73,6 +73,7 @@ void daisy_write()
 	daisy_wait_n_cycles(2);
 }
 
+/* sends update command to daisychain */
 void daisy_update(void)
 {
 	/* send startbit */
@@ -88,9 +89,11 @@ void daisy_read(void)
 	daisy_send_bit(1);
 	daisy_send_cmd(START_SND_CMD);
 	daisy_wait_n_cycles(2);
+	/* switch bidirectional port to read from the daisychain */
 	SET_DDR_DAISY_IN;
+	asm volatile("nop");
 	for (int i = DAISY_LEN_BYTE - 1; i >= 0; i--) {
-		for (int j = 0; j <= 8; j++) {
+		for (int j = 8; j >= 0; j--) {
 			_delay_us(250);
 			DAISY_CLK_H;
 			_delay_us(250);
@@ -101,8 +104,17 @@ void daisy_read(void)
 			DAISY_CLK_L;
 		}
 	}
-	/* becauuse of fsm structure all states take one extra clock cycle */
+	/* because of fsm structure all states take one extra clock cycle */
 	daisy_wait_n_cycles(1);
 	SET_DDR_DAISY_OUT;
 	asm volatile("nop");
+}
+
+void daisy_send_daisybuf_uart(void)
+{
+	for (int i = DAISY_LEN_BYTE - 1; i >= 0; i--) {
+		UART_transmit(daisybuf[i]);
+		/* clear daisybuf after sending */
+		daisybuf[i] = 0;
+	}
 }

@@ -36,5 +36,5 @@ void daisy_read();
 void daisy_write();
 void daisy_wait_n_cycles(uint8_t n);
 void daisy_send_cmd(enum command_t cmd);
-
+void daisy_send_daisybuf_uart(void); 
 #endif // DAISY_H

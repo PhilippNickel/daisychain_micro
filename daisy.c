@@ -21,6 +21,7 @@ void daisy_send_bit(uint8_t bit)
 		DAISY_OUT_L;
 	}
 	_delay_us(250);
+	_delay_us(250);
 	DAISY_CLK_H;
 	_delay_us(250); /* max. possible us_delay = 768us/F_CPU ca. 411us */
 	_delay_us(250);
@@ -32,6 +33,7 @@ void daisy_send_bit(uint8_t bit)
 void daisy_wait_n_cycles(uint8_t n)
 {
 	for (int i = 0; i < n; i++) {
+		_delay_us(250);
 		_delay_us(250);
 		DAISY_CLK_H;
 		_delay_us(250);
@@ -88,25 +90,31 @@ void daisy_read(void)
 	/* send startbit */
 	daisy_send_bit(1);
 	daisy_send_cmd(START_SND_CMD);
-	daisy_wait_n_cycles(2);
 	/* switch bidirectional port to read from the daisychain */
+
 	SET_DDR_DAISY_IN;
+	daisy_wait_n_cycles(3);
+
 	asm volatile("nop");
 	for (int i = DAISY_LEN_BYTE - 1; i >= 0; i--) {
-		for (int j = 8; j >= 0; j--) {
+		for (int j = 0; j < 8; j++) {
+			_delay_us(250);
 			_delay_us(250);
 			DAISY_CLK_H;
 			_delay_us(250);
+			DAISY_UPDATE_H;
 			if (DAISY_IN_VAL) {
 				daisybuf[i] |= (1 << j);
 			}
+			DAISY_UPDATE_L;
 			_delay_us(250);
 			DAISY_CLK_L;
 		}
 	}
 	/* because of fsm structure all states take one extra clock cycle */
-	daisy_wait_n_cycles(1);
+
 	SET_DDR_DAISY_OUT;
+	daisy_wait_n_cycles(3);
 	asm volatile("nop");
 }
 

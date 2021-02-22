@@ -27,6 +27,10 @@ enum command_t {
 #define DAISY_CLK_H PORTE |= (1 << PORTE1)
 #define DAISY_CLK_L PORTE &= ~(1 << PORTE1)
 
+#define SET_DDR_DAISY_UPDATE DDRE |= (1 << PORTE0)
+#define DAISY_UPDATE_H PORTE |= (1 << PORTE0)
+#define DAISY_UPDATE_L PORTE &= ~(1 << PORTE0)
+
 extern volatile uint8_t daisybuf[DAISY_LEN_BYTE];
 void daisy_send_bit(uint8_t bit);
 void daisy_update();

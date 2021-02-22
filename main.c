@@ -17,6 +17,7 @@ void util_init(void)
 {
 	SET_DDR_DAISY_OUT;
 	SET_DDR_DAISY_CLK;
+	SET_DDR_DAISY_UPDATE;
 	_delay_us(250);
 	DAISY_OUT_L;
 	DAISY_CLK_L;
